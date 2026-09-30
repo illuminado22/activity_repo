@@ -1,0 +1,51 @@
+---
+- name: Configure JVM heap size
+  ansible.builtin.copy:
+    dest: /etc/elasticsearch/jvm.options.d/heap.options
+    content: |
+      -Xms512m
+      -Xmx512m
+    owner: root
+    group: elasticsearch
+    mode: '0644'
+
+- name: Deploy clean elasticsearch configuration
+  ansible.builtin.copy:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    content: |
+      cluster.name: my-application
+      node.name: Server-1
+      path.data: /var/lib/elasticsearch
+      path.logs: /var/log/elasticsearch
+      network.host: 0.0.0.0
+      http.port: 9200
+      discovery.type: single-node
+      xpack.security.enabled: false
+      xpack.security.enrollment.enabled: false
+      xpack.security.http.ssl.enabled: false
+      xpack.security.transport.ssl.enabled: false
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+    force: yes
+
+- name: Ensure correct directory ownership
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    recurse: yes
+  loop:
+    - /var/lib/elasticsearch
+    - /var/log/elasticsearch
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Ensure Elasticsearch service is running and enabled
+  ansible.builtin.service:
+    name: elasticsearch
+    state: restarted
+    enabled: true
