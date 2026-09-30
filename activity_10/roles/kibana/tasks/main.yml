@@ -1,5 +1,4 @@
 ---
-# 1. Install Kibana package
 - name: Install Kibana
   ansible.builtin.apt:
     name: kibana
@@ -7,7 +6,6 @@
     update_cache: yes
   when: ansible_distribution == "Ubuntu"
 
-# 2. Allow external web traffic on port 5601
 - name: Allow external traffic on port 5601
   ansible.builtin.lineinfile:
     path: /etc/kibana/kibana.yml
@@ -15,7 +13,6 @@
     line: 'server.host: "0.0.0.0"'
   notify: restart_kibana
 
-# 3. Point Kibana to the Elasticsearch node dynamically
 - name: Point Kibana to Elasticsearch host
   ansible.builtin.lineinfile:
     path: /etc/kibana/kibana.yml
@@ -23,7 +20,6 @@
     line: 'elasticsearch.hosts: ["http://{{ hostvars[groups.elastic_servers[0]].ansible_host }}:9200"]' 
   notify: restart_kibana
 
-# 4. Ensure Kibana service is started and enabled
 - name: Ensure Kibana is started and enabled
   ansible.builtin.service:
     name: kibana
