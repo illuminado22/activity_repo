@@ -1,0 +1,23 @@
+--- 
+- hosts:  all
+  become: true
+  roles:  
+    - role: repo
+
+- hosts: elastic_servers
+  become: true
+  roles:
+    - role: elastic
+      tags: elastic
+
+- hosts: kibana_servers
+  become: true
+  roles:  
+    - role: kibana
+      tags: kibana
+
+- hosts: logstash_servers
+  become: true  
+  roles:  
+    - role: logstash
+      tags: logstash
