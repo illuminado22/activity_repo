@@ -3,6 +3,7 @@
   become: true
   roles:  
     - role: repo
+      tags: repo 
 
 - hosts: elastic_servers
   become: true
