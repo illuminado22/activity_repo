@@ -1,0 +1,30 @@
+---
+- name: Install Logstash and OpenJDK
+  ansible.builtin.package:
+    name:
+      - logstash
+    state: present
+
+- name: Create basic beats-to-elasticsearch logstash pipeline
+  ansible.builtin.copy:
+    dest: /etc/logstash/conf.d/02-beats-input.conf
+    content: |
+      input {
+        beats {
+          port => 5044
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => ["http://{{ hostvars[groups['elastic_servers'][0]]['ansible_host'] }}:9200"]
+          index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+        }
+      }
+    mode: '0644'
+  notify: restart_logstash
+
+- name: Ensure Logstash is started and enabled
+  ansible.builtin.service:
+    name: logstash
+    state: started
+    enabled: true
