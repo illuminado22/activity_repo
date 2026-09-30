@@ -1,0 +1,39 @@
+---
+#UBUNTU
+- name: Install APT prerequisites 
+  ansible.builtin.apt:
+    name: [apt-transport-https, ca-certificates, gnupg]
+    state: present
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Add Elastic GPG key 
+  ansible.builtin.apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Add Elastic APT repository 
+  ansible.builtin.apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/8.x/apt stable main"
+    state: present
+    filename: elastic-8.x
+  when: ansible_distribution == "Ubuntu"
+
+#CENTOS
+
+- name: Import Elastic GPG Key 
+  ansible.builtin.rpm_key:
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: Add Elastic YUM repository 
+  ansible.builtin.yum_repository:
+    name: elastic-8.x
+    description: "Elasticsearch repository for 8.x packages"
+    baseurl: "https://artifacts.elastic.co/packages/8.x/yum"
+    gpgcheck: yes
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    enabled: yes
+  when: ansible_distribution == "CentOS"
