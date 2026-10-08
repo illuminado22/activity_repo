@@ -1,0 +1,24 @@
+---
+- name: Install Docker and Python SDK packages
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - python3-docker
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Enable and start Docker daemon and socket
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - docker
+    - docker.socket
+
+- name: Add current user to docker group
+  ansible.builtin.user:
+    name: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+    groups: docker
+    append: yes
