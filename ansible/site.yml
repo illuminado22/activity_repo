@@ -1,0 +1,14 @@
+---
+- name: orachastrate the whole docker setup, build, and run
+  hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - role: docker_setup
+      tags: setup
+
+    - role: docker_build
+      tags: build
+
+    - role: docker_run
+      tags: run
