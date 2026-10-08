@@ -1,0 +1,9 @@
+---
+- name: Build image from Dockerfile
+  community.docker.docker_image:
+    name: web_db_image
+    tag: latest
+    build:
+      path: "{{ playbook_dir }}"
+    source: build
+    state: present
